@@ -1,5 +1,5 @@
 {
-	"name": "dataflow1",
+	"name": "raw_to_bronze",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "Parquet1",
+						"referenceName": "Parquet2",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
