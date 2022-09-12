@@ -39,7 +39,7 @@
 				"     ignoreNoFilesFound: false,",
 				"     documentForm: 'singleDocument',",
 				"     wildcardPaths:['*.json']) ~> movieraw",
-				"movieraw foldDown(unroll(movie),",
+				"movieraw foldDown(unroll(movie, movie),",
 				"     mapColumn(",
 				"          movie",
 				"     ),",
