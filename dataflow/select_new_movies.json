@@ -57,7 +57,7 @@
 				"flatten1 aggregate(groupBy(id = genres.id),",
 				"     genres = max(genres.name)) ~> aggregategenreidandname",
 				"select1 select(mapColumn(",
-				"          movie",
+				"          {} = movie",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select2"
