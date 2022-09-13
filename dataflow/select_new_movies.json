@@ -22,6 +22,12 @@
 				},
 				{
 					"name": "flatten1"
+				},
+				{
+					"name": "aggregategenreidandname"
+				},
+				{
+					"name": "select2"
 				}
 			],
 			"scriptLines": [
@@ -47,7 +53,14 @@
 				"          genres = movie.genres",
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
-				"     skipDuplicateMapOutputs: true) ~> flatten1"
+				"     skipDuplicateMapOutputs: true) ~> flatten1",
+				"flatten1 aggregate(groupBy(id = genres.id),",
+				"     genres = max(genres.name)) ~> aggregategenreidandname",
+				"select1 select(mapColumn(",
+				"          movie",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2"
 			]
 		}
 	}
