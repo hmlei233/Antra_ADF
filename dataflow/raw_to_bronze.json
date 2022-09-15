@@ -14,10 +14,6 @@
 			],
 			"sinks": [
 				{
-					"dataset": {
-						"referenceName": "Parquet2",
-						"type": "DatasetReference"
-					},
 					"name": "sink1"
 				}
 			],
@@ -27,6 +23,9 @@
 				},
 				{
 					"name": "derivedColumn1"
+				},
+				{
+					"name": "stringify1"
 				}
 			],
 			"scriptLines": [
@@ -45,18 +44,19 @@
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> flatten1",
-				"flatten1 derive(datasource = \"antra_movieshops\",",
+				"stringify1 derive(datasource = \"antra_movieshops\",",
 				"          ingesttime = currentTimestamp(),",
 				"          ingestdate = currentDate(),",
 				"          status = \"new\") ~> derivedColumn1",
+				"flatten1 stringify(movie = movie ? string,",
+				"     format: 'json') ~> stringify1",
 				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     format: 'parquet',",
-				"     umask: 0022,",
-				"     preCommands: [],",
-				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true,",
+				"     format: 'parquet',",
+				"     preCommands: [],",
+				"     postCommands: []) ~> sink1"
 			]
 		}
 	}
