@@ -84,6 +84,12 @@
 					"name": "derivedColumn1"
 				},
 				{
+					"name": "select6"
+				},
+				{
+					"name": "join2"
+				},
+				{
 					"name": "alterRow1"
 				}
 			],
@@ -201,7 +207,18 @@
 				"     format: 'json',",
 				"     documentForm: 'singleDocument') ~> parse1",
 				"filter1 derive(movie2 = movie) ~> derivedColumn1",
-				"addStatusLoaded alterRow() ~> alterRow1",
+				"addStatusLoaded select(mapColumn(",
+				"          movie,",
+				"          status2",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select6",
+				"select6, source1 join(select6@movie == source1@movie,",
+				"     joinType:'outer',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2",
+				"join2 alterRow(upsertIf(isNull(status2))) ~> alterRow1",
 				"aggregate1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
