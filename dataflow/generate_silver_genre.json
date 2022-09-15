@@ -18,7 +18,7 @@
 						"referenceName": "silvergenre",
 						"type": "DatasetReference"
 					},
-					"name": "genresink2"
+					"name": "genresink"
 				},
 				{
 					"name": "moviegenresink"
@@ -82,7 +82,7 @@
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> genresink2",
+				"     skipDuplicateMapOutputs: true) ~> genresink",
 				"select2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
