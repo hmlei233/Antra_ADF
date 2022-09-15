@@ -39,6 +39,12 @@
 				},
 				{
 					"name": "select2"
+				},
+				{
+					"name": "select3"
+				},
+				{
+					"name": "window1"
 				}
 			],
 			"scriptLines": [
@@ -75,6 +81,14 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select2",
+				"source1 select(mapColumn(",
+				"          OriginalLanguageName = movie.OriginalLanguage",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"select3 window(over(OriginalLanguageName),",
+				"     asc(OriginalLanguageName, true),",
+				"     OriginalLanguageId = denseRank()) ~> window1",
 				"aggregate1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
