@@ -1,5 +1,5 @@
 {
-	"name": "select_new_movies",
+	"name": "generate_silver_genre",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -29,7 +29,10 @@
 					"name": "flatten1"
 				},
 				{
-					"name": "aggregategenreidandname"
+					"name": "select1"
+				},
+				{
+					"name": "aggregate1"
 				}
 			],
 			"scriptLines": [
@@ -47,13 +50,20 @@
 				"source1 filter(status == \"new\") ~> filter1",
 				"filter1 foldDown(unroll(movie.genres, movie.genres),",
 				"     mapColumn(",
-				"          genres = movie.genres",
+				"          genres = movie.genres,",
+				"          movieid = movie.Id",
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: true) ~> flatten1",
-				"flatten1 aggregate(groupBy(id = genres.id),",
-				"     genres = max(genres.name)) ~> aggregategenreidandname",
-				"aggregategenreidandname sink(allowSchemaDrift: true,",
+				"flatten1 select(mapColumn(",
+				"          genre_id = genres.id,",
+				"          genre_name = genres.name",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 aggregate(groupBy(genre_id),",
+				"     genre_name = max(genre_name)) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     umask: 0022,",
