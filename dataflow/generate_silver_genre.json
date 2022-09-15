@@ -21,7 +21,7 @@
 					"name": "genresink2"
 				},
 				{
-					"name": "sink1"
+					"name": "moviegenresink"
 				}
 			],
 			"transformations": [
@@ -86,7 +86,7 @@
 				"select2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true) ~> moviegenresink"
 			]
 		}
 	}
