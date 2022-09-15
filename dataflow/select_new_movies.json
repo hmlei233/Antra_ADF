@@ -6,28 +6,30 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "Parquet2",
+						"referenceName": "bronzemovie",
 						"type": "DatasetReference"
 					},
 					"name": "source1"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "silvergenre",
+						"type": "DatasetReference"
+					},
+					"name": "genresink2"
+				}
+			],
 			"transformations": [
 				{
 					"name": "filter1"
-				},
-				{
-					"name": "select1"
 				},
 				{
 					"name": "flatten1"
 				},
 				{
 					"name": "aggregategenreidandname"
-				},
-				{
-					"name": "select2"
 				}
 			],
 			"scriptLines": [
@@ -43,12 +45,7 @@
 				"     ignoreNoFilesFound: false,",
 				"     format: 'parquet') ~> source1",
 				"source1 filter(status == \"new\") ~> filter1",
-				"filter1 select(mapColumn(",
-				"          movie",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 foldDown(unroll(movie.genres, movie.genres),",
+				"filter1 foldDown(unroll(movie.genres, movie.genres),",
 				"     mapColumn(",
 				"          genres = movie.genres",
 				"     ),",
@@ -56,11 +53,14 @@
 				"     skipDuplicateMapOutputs: true) ~> flatten1",
 				"flatten1 aggregate(groupBy(id = genres.id),",
 				"     genres = max(genres.name)) ~> aggregategenreidandname",
-				"select1 select(mapColumn(",
-				"          {} = movie",
-				"     ),",
+				"aggregategenreidandname sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select2"
+				"     skipDuplicateMapOutputs: true) ~> genresink2"
 			]
 		}
 	}

@@ -1,5 +1,5 @@
 {
-	"name": "bronzemovie",
+	"name": "silvergenre",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureDataLakeStorage1",
@@ -9,9 +9,7 @@
 		"type": "Parquet",
 		"typeProperties": {
 			"location": {
-				"type": "AzureBlobFSLocation",
-				"fileName": "part-00003-e9e06fee-8524-48c9-81e8-01b7415c06cc-c000.snappy.parquet",
-				"fileSystem": "movies"
+				"type": "AzureBlobFSLocation"
 			},
 			"compressionCodec": "snappy"
 		},
