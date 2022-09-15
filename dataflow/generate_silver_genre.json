@@ -22,6 +22,13 @@
 				},
 				{
 					"name": "moviegenresink"
+				},
+				{
+					"dataset": {
+						"referenceName": "silver_language",
+						"type": "DatasetReference"
+					},
+					"name": "languagesink"
 				}
 			],
 			"transformations": [
@@ -45,6 +52,9 @@
 				},
 				{
 					"name": "window1"
+				},
+				{
+					"name": "aggregate2"
 				}
 			],
 			"scriptLines": [
@@ -89,6 +99,8 @@
 				"select3 window(over(OriginalLanguageName),",
 				"     asc(OriginalLanguageName, true),",
 				"     OriginalLanguageId = denseRank()) ~> window1",
+				"window1 aggregate(groupBy(OriginalLanguageId),",
+				"     OriginalLanguageName = max(OriginalLanguageName)) ~> aggregate2",
 				"aggregate1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
@@ -100,7 +112,15 @@
 				"select2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> moviegenresink"
+				"     skipDuplicateMapOutputs: true) ~> moviegenresink",
+				"aggregate2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> languagesink"
 			]
 		}
 	}
