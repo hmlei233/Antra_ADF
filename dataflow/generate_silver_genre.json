@@ -73,6 +73,9 @@
 				},
 				{
 					"name": "filterClean"
+				},
+				{
+					"name": "addStatusLoaded"
 				}
 			],
 			"scriptLines": [
@@ -174,6 +177,7 @@
 				"source1 filter(status == \"new\") ~> filter1",
 				"select4 filter(RunTime < 0) ~> filterQuarantine",
 				"select4 filter(RunTime >= 0) ~> filterClean",
+				"filterClean derive(status = \"loaded\") ~> addStatusLoaded",
 				"aggregate1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
