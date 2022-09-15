@@ -29,6 +29,9 @@
 						"type": "DatasetReference"
 					},
 					"name": "languagesink"
+				},
+				{
+					"name": "silvermoviesink"
 				}
 			],
 			"transformations": [
@@ -64,6 +67,12 @@
 				},
 				{
 					"name": "filter1"
+				},
+				{
+					"name": "filterQuarantine"
+				},
+				{
+					"name": "filterClean"
 				}
 			],
 			"scriptLines": [
@@ -126,7 +135,7 @@
 				"          TmdbUrl,",
 				"          PosterUrl,",
 				"          BackdropUrl,",
-				"          OriginalLanguage = OriginalLanguageId,",
+				"          OriginalLanguageId,",
 				"          ReleaseDate,",
 				"          RunTime,",
 				"          Price,",
@@ -163,6 +172,8 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select5",
 				"source1 filter(status == \"new\") ~> filter1",
+				"select4 filter(RunTime < 0) ~> filterQuarantine",
+				"select4 filter(RunTime >= 0) ~> filterClean",
 				"aggregate1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
@@ -182,7 +193,31 @@
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> languagesink"
+				"     skipDuplicateMapOutputs: true) ~> languagesink",
+				"filterClean sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Id,",
+				"          Title,",
+				"          Overview,",
+				"          Tagline,",
+				"          Budget,",
+				"          Revenue,",
+				"          ImdbUrl,",
+				"          TmdbUrl,",
+				"          PosterUrl,",
+				"          BackdropUrl,",
+				"          OriginalLanguageId,",
+				"          ReleaseDate,",
+				"          RunTime,",
+				"          Price,",
+				"          CreatedDate,",
+				"          UpdatedDate,",
+				"          UpdatedBy,",
+				"          CreatedBy",
+				"     )) ~> silvermoviesink"
 			]
 		}
 	}
