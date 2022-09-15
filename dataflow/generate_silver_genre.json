@@ -19,6 +19,9 @@
 						"type": "DatasetReference"
 					},
 					"name": "genresink2"
+				},
+				{
+					"name": "sink1"
 				}
 			],
 			"transformations": [
@@ -33,6 +36,9 @@
 				},
 				{
 					"name": "aggregate1"
+				},
+				{
+					"name": "select2"
 				}
 			],
 			"scriptLines": [
@@ -63,6 +69,12 @@
 				"     skipDuplicateMapOutputs: true) ~> select1",
 				"select1 aggregate(groupBy(genre_id),",
 				"     genre_name = max(genre_name)) ~> aggregate1",
+				"flatten1 select(mapColumn(",
+				"          movie_id = movieid,",
+				"          genre_id = genres.id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
 				"aggregate1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
@@ -70,7 +82,11 @@
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> genresink2"
+				"     skipDuplicateMapOutputs: true) ~> genresink2",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
 			]
 		}
 	}
