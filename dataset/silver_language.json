@@ -1,0 +1,19 @@
+{
+	"name": "silver_language",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "silver-language"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
