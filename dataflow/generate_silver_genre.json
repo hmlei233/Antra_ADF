@@ -42,6 +42,10 @@
 					"name": "silvermoviesink"
 				},
 				{
+					"dataset": {
+						"referenceName": "bronze_movie3",
+						"type": "DatasetReference"
+					},
 					"name": "updateBronzeSink"
 				}
 			],
@@ -320,6 +324,10 @@
 				"     )) ~> silvermoviesink",
 				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> updateBronzeSink"
 			]
