@@ -1,5 +1,5 @@
 {
-	"name": "movies",
+	"name": "movies_raw_to_bronze_to_silver",
 	"properties": {
 		"activities": [
 			{
@@ -23,37 +23,6 @@
 								"fileName": "*.json"
 							}
 						}
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
-				}
-			},
-			{
-				"name": "generate_silver_genre",
-				"type": "ExecuteDataFlow",
-				"dependsOn": [
-					{
-						"activity": "raw_to_bronze",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataflow": {
-						"referenceName": "generate_silver_genre",
-						"type": "DataFlowReference"
 					},
 					"compute": {
 						"coreCount": 8,
