@@ -1,0 +1,30 @@
+{
+	"name": "AzureSqlTable1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase_WWI_OLTP",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"OLTPTableName": {
+				"type": "string"
+			},
+			"OLTPSchema": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().OLTPSchema",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().OLTPTableName",
+				"type": "Expression"
+			}
+		}
+	}
+}
