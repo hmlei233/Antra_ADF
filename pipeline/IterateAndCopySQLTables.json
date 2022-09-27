@@ -14,7 +14,7 @@
 					},
 					"activities": [
 						{
-							"name": "Copy data1",
+							"name": "Copy data1_copy1",
 							"type": "Copy",
 							"dependsOn": [],
 							"policy": {
@@ -79,16 +79,7 @@
 		],
 		"parameters": {
 			"tableList": {
-				"type": "array",
-				"defaultValue": [
-					"Sales.Customers",
-					"Sales.Invoices",
-					"Application.People",
-					"Sales.Orders",
-					"Sales.OrderLines",
-					"Warehouse.PackageTypes",
-					"Warehouse.StockItems"
-				]
+				"type": "array"
 			}
 		},
 		"annotations": []
