@@ -18,12 +18,39 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT TABLE_SCHEMA, TABLE_NAME FROM information_schema.TABLES WHERE TABLE_TYPE = 'BASE TABLE' and \nTABLE_SCHEMA = 'Application' and TABLE_NAME = 'People'\nOR (TABLE_SCHEMA = 'Sales' and TABLE_NAME = 'Customers')\nOR (TABLE_SCHEMA = 'Sales' and TABLE_NAME = 'Invoices')\nOR (TABLE_SCHEMA = 'Sales' and TABLE_NAME = 'Orders')\nOR (TABLE_SCHEMA = 'Sales' and TABLE_NAME = 'OrderLines')\nOR (TABLE_SCHEMA = 'Warehouse' and TABLE_NAME = 'PackageTypes')\nOR (TABLE_SCHEMA = 'Warehouse' and TABLE_NAME = 'StockItems')\n",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
 					"dataset": {
 						"referenceName": "AzureSQLDatabase_WWI",
 						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "TriggerCopy",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "LookupTableList",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "IterateAndCopySQLTables",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": false,
+					"parameters": {
+						"tableList": {
+							"value": "@activity('LookupTableList').output.value",
+							"type": "Expression"
+						}
 					}
 				}
 			}
