@@ -111,7 +111,7 @@
 					"name": "filter2"
 				},
 				{
-					"name": "select1"
+					"name": "renameToStatus"
 				},
 				{
 					"name": "select2"
@@ -250,10 +250,10 @@
 				"          datasource,",
 				"          ingesttime,",
 				"          ingestdate,",
-				"          status_update",
+				"          status = status_update",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
+				"     skipDuplicateMapOutputs: true) ~> renameToStatus",
 				"filterClean select(mapColumn(",
 				"          Id,",
 				"          Title,",
@@ -322,7 +322,7 @@
 				"          Price,",
 				"          CreatedDate",
 				"     )) ~> silvermoviesink",
-				"select1 sink(allowSchemaDrift: true,",
+				"renameToStatus sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     umask: 0022,",
