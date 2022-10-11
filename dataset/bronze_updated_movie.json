@@ -1,0 +1,19 @@
+{
+	"name": "bronze_updated_movie",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "bronze-updated"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
