@@ -1,0 +1,336 @@
+{
+	"name": "generate_silver_genre_copy1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "bronze_updated_movie",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "silver_genre",
+						"type": "DatasetReference"
+					},
+					"name": "genresink"
+				},
+				{
+					"dataset": {
+						"referenceName": "silver_moviegenre",
+						"type": "DatasetReference"
+					},
+					"name": "moviegenresink"
+				},
+				{
+					"dataset": {
+						"referenceName": "silver_language",
+						"type": "DatasetReference"
+					},
+					"name": "languagesink"
+				},
+				{
+					"dataset": {
+						"referenceName": "silver_movie",
+						"type": "DatasetReference"
+					},
+					"name": "silvermoviesink"
+				},
+				{
+					"dataset": {
+						"referenceName": "bronze_updated_movie",
+						"type": "DatasetReference"
+					},
+					"name": "updateBronzeSink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "flattenGenre"
+				},
+				{
+					"name": "selectGenreIDGenreName"
+				},
+				{
+					"name": "removeDuplicateGenre"
+				},
+				{
+					"name": "selectMovieGenre"
+				},
+				{
+					"name": "renameOriginalLanguage"
+				},
+				{
+					"name": "createLanguageId"
+				},
+				{
+					"name": "removeDuplicateLanguage"
+				},
+				{
+					"name": "joinMovieWithLanguage"
+				},
+				{
+					"name": "replaceLanguageWithLanguageId"
+				},
+				{
+					"name": "selectMovieMovie2Parsed"
+				},
+				{
+					"name": "filterQuarantinedData"
+				},
+				{
+					"name": "filterQuarantine"
+				},
+				{
+					"name": "filterClean"
+				},
+				{
+					"name": "addStatus2Loaded"
+				},
+				{
+					"name": "parseMovie2"
+				},
+				{
+					"name": "copyMovie"
+				},
+				{
+					"name": "selectMovieAndStatus2"
+				},
+				{
+					"name": "joinBronzeAndClean"
+				},
+				{
+					"name": "addStatusUpdateColumn"
+				},
+				{
+					"name": "filter2"
+				},
+				{
+					"name": "renameToStatus"
+				},
+				{
+					"name": "select2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          movie as string,",
+				"          datasource as string,",
+				"          ingesttime as timestamp,",
+				"          ingestdate as date,",
+				"          status as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     wildcardPaths:['*.parquet']) ~> source1",
+				"selectMovieMovie2Parsed foldDown(unroll(genres),",
+				"     mapColumn(",
+				"          movie_id = Id,",
+				"          genre_id = genres.id,",
+				"          genre_name = genres.name",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: true) ~> flattenGenre",
+				"flattenGenre select(mapColumn(",
+				"          genre_id,",
+				"          genre_name",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectGenreIDGenreName",
+				"selectGenreIDGenreName aggregate(groupBy(genre_id),",
+				"     genre_name = max(genre_name)) ~> removeDuplicateGenre",
+				"flattenGenre select(mapColumn(",
+				"          movie_id,",
+				"          genre_id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectMovieGenre",
+				"selectMovieMovie2Parsed select(mapColumn(",
+				"          OriginalLanguageName = OriginalLanguage",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> renameOriginalLanguage",
+				"renameOriginalLanguage window(over(OriginalLanguageName),",
+				"     asc(OriginalLanguageName, true),",
+				"     OriginalLanguageId = denseRank()) ~> createLanguageId",
+				"createLanguageId aggregate(groupBy(OriginalLanguageId),",
+				"     OriginalLanguageName = max(OriginalLanguageName)) ~> removeDuplicateLanguage",
+				"selectMovieMovie2Parsed, removeDuplicateLanguage join(OriginalLanguage == OriginalLanguageName,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinMovieWithLanguage",
+				"joinMovieWithLanguage select(mapColumn(",
+				"          Id,",
+				"          Title,",
+				"          Overview,",
+				"          Tagline,",
+				"          Budget,",
+				"          Revenue,",
+				"          ImdbUrl,",
+				"          TmdbUrl,",
+				"          PosterUrl,",
+				"          BackdropUrl,",
+				"          OriginalLanguageId,",
+				"          ReleaseDate,",
+				"          RunTime,",
+				"          Price,",
+				"          CreatedDate,",
+				"          movie",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> replaceLanguageWithLanguageId",
+				"parseMovie2 select(mapColumn(",
+				"          Id = movie2.Id,",
+				"          Title = movie2.Title,",
+				"          Overview = movie2.Overview,",
+				"          Tagline = movie2.Tagline,",
+				"          Budget = movie2.Budget,",
+				"          Revenue = movie2.Revenue,",
+				"          ImdbUrl = movie2.ImdbUrl,",
+				"          TmdbUrl = movie2.TmdbUrl,",
+				"          PosterUrl = movie2.PosterUrl,",
+				"          BackdropUrl = movie2.BackdropUrl,",
+				"          OriginalLanguage = movie2.OriginalLanguage,",
+				"          ReleaseDate = movie2.ReleaseDate,",
+				"          RunTime = movie2.RunTime,",
+				"          Price = movie2.Price,",
+				"          CreatedDate = movie2.CreatedDate,",
+				"          genres = movie2.genres,",
+				"          movie",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectMovieMovie2Parsed",
+				"source1 filter(status == \"quarantined\") ~> filterQuarantinedData",
+				"replaceLanguageWithLanguageId filter(RunTime < 0) ~> filterQuarantine",
+				"replaceLanguageWithLanguageId filter(RunTime >= 0) ~> filterClean",
+				"filterClean derive(status2 = \"loaded\") ~> addStatus2Loaded",
+				"copyMovie parse(movie2 = movie2 ? (Id as integer,",
+				"          Title as string,",
+				"          Overview as string,",
+				"          Tagline as string,",
+				"          Budget as double,",
+				"          Revenue as double,",
+				"          ImdbUrl as string,",
+				"          TmdbUrl as string,",
+				"          PosterUrl as string,",
+				"          BackdropUrl as string,",
+				"          OriginalLanguage as string,",
+				"          ReleaseDate as date,",
+				"          RunTime as integer,",
+				"          Price as double,",
+				"          CreatedDate as date,",
+				"          genres as (id as integer,",
+				"     name as string)[]),",
+				"     format: 'json',",
+				"     documentForm: 'singleDocument') ~> parseMovie2",
+				"filterQuarantinedData derive(movie2 = movie) ~> copyMovie",
+				"addStatus2Loaded select(mapColumn(",
+				"          movie,",
+				"          status2",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectMovieAndStatus2",
+				"selectMovieAndStatus2, source1 join(selectMovieAndStatus2@movie == source1@movie,",
+				"     joinType:'right',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinBronzeAndClean",
+				"joinBronzeAndClean derive(status_update = iif(status != \"new\", status, iif(status2 == \"loaded\", \"loaded\", \"quarantined\"))) ~> addStatusUpdateColumn",
+				"addStatusUpdateColumn filter(status_update == \"quarantined\") ~> filter2",
+				"addStatusUpdateColumn select(mapColumn(",
+				"          movie = source1@movie,",
+				"          datasource,",
+				"          ingesttime,",
+				"          ingestdate,",
+				"          status = status_update",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> renameToStatus",
+				"filterClean select(mapColumn(",
+				"          Id,",
+				"          Title,",
+				"          Overview,",
+				"          Tagline,",
+				"          Budget,",
+				"          Revenue,",
+				"          ImdbUrl,",
+				"          TmdbUrl,",
+				"          PosterUrl,",
+				"          BackdropUrl,",
+				"          OriginalLanguageId,",
+				"          ReleaseDate,",
+				"          RunTime,",
+				"          Price,",
+				"          CreatedDate",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"removeDuplicateGenre sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> genresink",
+				"selectMovieGenre sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> moviegenresink",
+				"removeDuplicateLanguage sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> languagesink",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Id,",
+				"          Title,",
+				"          Overview,",
+				"          Tagline,",
+				"          Budget,",
+				"          Revenue,",
+				"          ImdbUrl,",
+				"          TmdbUrl,",
+				"          PosterUrl,",
+				"          BackdropUrl,",
+				"          OriginalLanguageId,",
+				"          ReleaseDate,",
+				"          RunTime,",
+				"          Price,",
+				"          CreatedDate",
+				"     )) ~> silvermoviesink",
+				"renameToStatus sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> updateBronzeSink"
+			]
+		}
+	}
+}

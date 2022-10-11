@@ -16,6 +16,12 @@
 			"transformations": [
 				{
 					"name": "filterQuarantinedMovies"
+				},
+				{
+					"name": "copyMovie"
+				},
+				{
+					"name": "parseMovie2"
 				}
 			],
 			"scriptLines": [
@@ -30,7 +36,26 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     format: 'parquet') ~> source1",
-				"source1 filter(status==\"quarantined\") ~> filterQuarantinedMovies"
+				"source1 filter(status==\"quarantined\") ~> filterQuarantinedMovies",
+				"filterQuarantinedMovies derive(movie2 = movie) ~> copyMovie",
+				"copyMovie parse(movie2 = movie2 ? (Id as integer,",
+				"          Title as string,",
+				"          Overview as string,",
+				"          Tagline as string,",
+				"          Budget as double,",
+				"          Revenue as double,",
+				"          ImdbUrl as string,",
+				"          TmdbUrl as string,",
+				"          PosterUrl as string,",
+				"          BackdropUrl as string,",
+				"          OriginalLanguage as string,",
+				"          ReleaseDate as date,",
+				"          RunTime as integer,",
+				"          Price as double,",
+				"          CreatedDate as date,",
+				"          genres as (id as integer,     name as string)[]),",
+				"     format: 'json',",
+				"     documentForm: 'documentPerLine') ~> parseMovie2"
 			]
 		}
 	}
