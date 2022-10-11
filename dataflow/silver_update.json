@@ -5,19 +5,32 @@
 		"typeProperties": {
 			"sources": [
 				{
+					"dataset": {
+						"referenceName": "bronze_updated_movie",
+						"type": "DatasetReference"
+					},
 					"name": "source1"
 				}
 			],
 			"sinks": [],
 			"transformations": [
 				{
-					"name": "filter1"
+					"name": "filterQuarantinedMovies"
 				}
 			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source1",
-				"source1 filter(ERROR_FUNCTION('')) ~> filter1"
+				"source(output(",
+				"          movie as string,",
+				"          datasource as string,",
+				"          ingesttime as timestamp,",
+				"          ingestdate as date,",
+				"          status as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> source1",
+				"source1 filter(status==\"quarantined\") ~> filterQuarantinedMovies"
 			]
 		}
 	}
